@@ -17,7 +17,7 @@ npm run build
 
 把 `dist/` 目录完整上传到静态网站的 `/ledger/` 路径即可。正式使用必须通过 HTTPS 访问，否则 iPhone 无法启用完整的离线 Web App 能力。服务器需要把未知路径回退到 `/ledger/index.html`。当前构建的公开地址基址是 `/ledger/`。
 
-当前生产环境的手机入口是 `https://8.148.157.132:443/ledger/`。该入口使用 Let’s Encrypt 的短期 IP 证书，由 acme.sh 定时自动续期。`ledger.catudio.art` 保留为桌面备用入口；由于大陆节点的域名备案拦截，不作为手机主入口。
+当前生产环境的手机入口是 `https://...:443/ledger/`。该入口使用 Let’s Encrypt 的短期 IP 证书，由 acme.sh 定时自动续期。`ledger.catudio.art` 保留为桌面备用入口；由于大陆节点的域名备案拦截，不作为手机主入口。
 
 Nginx 示例：
 
