@@ -1,0 +1,16 @@
+{
+  "name": "小黄账本",
+  "short_name": "小黄账本",
+  "description": "数据只保存在本机、支持 Excel 导入导出的个人账本",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffda3d",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icons/app-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

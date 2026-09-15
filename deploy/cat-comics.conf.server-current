@@ -1,0 +1,103 @@
+# 猫咪漫画工作室 - Nginx 配置
+
+# 后端 upstream
+upstream cat_comics_backend {
+    server 127.0.0.1:8000;
+    keepalive 64;
+}
+
+server {
+    server_name catudio.art www.catudio.art;
+    
+    # 最大上传文件大小
+    client_max_body_size 10M;
+    
+    # 日志
+    access_log /var/log/nginx/cat-comics-access.log;
+    error_log /var/log/nginx/cat-comics-error.log;
+    
+    # 根路径重定向到前端
+    location = / {
+        return 301 /app/landing.html;
+    }
+    
+    # 邮箱验证页面
+    location = /verify-email {
+        default_type text/html;
+        alias /root/cat_work_v3/frontend/verify-email.html;
+    }
+
+    # 前端静态文件
+    location /app/ {
+        alias /root/cat_work_v3/frontend/;
+        try_files $uri $uri/ /app/index.html;
+        
+        # 静态资源缓存
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf)$ {
+            expires 7d;
+            add_header Cache-Control "public, immutable";
+        }
+    }
+    
+    # API 请求转发到后端
+    include /etc/nginx/snippets/local-ledger.conf;
+    location /api/ {
+        proxy_pass http://cat_comics_backend;
+        proxy_http_version 1.1;
+        
+        # 代理头设置
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+        
+        # 超时设置（漫画生成可能需要较长时间）
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+    }
+    
+    # 静态资源（生成的图片）
+    location /static/ {
+        alias /root/cat_work_v3/output/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+    
+    # 健康检查
+    location /health {
+        proxy_pass http://cat_comics_backend/api/health;
+        access_log off;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/nginx/ssl/catudio.art/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/catudio.art/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+
+
+server {
+    listen 80;
+    server_name catudio.art www.catudio.art;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/lib/letsencrypt;
+        default_type text/plain;
+        try_files $uri =404;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 80 default_server;
+    server_name 8.148.157.132 _;
+    return 404;
+}

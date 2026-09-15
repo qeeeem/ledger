@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.pytest_cache/
+.tmp-downloads/
+.DS_Store
+*.log
+*.tar.gz
+import-test.xlsx
+.env
+.env.*
+*.pem
+*.key
